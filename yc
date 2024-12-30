@@ -1,6 +1,5 @@
 “Tạo một tài liệu phác thảo mục đích, mục tiêu, phạm vi, sản phẩm bàn giao,các bên liên quan và tiêu chí thành công cho một dự án phát triển phần mềm. Dự án là phát triển một ứng dụng web cung cấp dịch vụ tra cứu thông tin lịch việt nam, có thể tra cứu lịch âm, lịch dương, ngày tốt xấu, Các sự kiện lịch sử, lễ hội trong ngày. Có thể tra cứu thông tin theo ngày, theo tuần, hay tháng. Vui lòng đảm bảo rằng tài liệu tuân theo hướng dẫn về phong cách của người Việt Nam và bao gồm tất cả các phần và thông tin cần thiết.”
 
-
 ### Tài liệu phác thảo dự án: Phát triển Ứng dụng web tra cứu thông tin lịch Việt Nam
 
 #### 1. **Mục đích dự án**
@@ -44,6 +43,9 @@
 - Phản hồi tích cự từ tối thiểu 80% khách hàng.
 - Dự án hoàn thành đúng thời gian và ngân sách đề ra.
 
-### Kết luận
-Tài liệu n
+#### 7. **Ngôn ngữ và các ứng dụng triển khai**
+- **Ngôn ngữ lập trình:** Python.
+- **Framework:** Flask/Django.
+- **Cơ sở dữ liệu:** PostgreSQL/My
+
 
