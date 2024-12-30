@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thoigian App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Welcome to Thoigian App</h1>
+    <p>Tra cứu lịch Việt Nam</p>
+    <ul>
+        {% for event in events %}
+        <li><a href="{{ url_for('day_view', date=event.date.strftime('%Y-%m-%d')) }}">{{ event.date }} - {{ event.description }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
