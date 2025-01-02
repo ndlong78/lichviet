@@ -1,67 +1,67 @@
+# config.py
 import os
 from datetime import timedelta
+from dotenv import load_dotenv
 
-class Config:
-    # Basic Configuration
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-super-secret-key-here'
-    FLASK_APP = os.environ.get('FLASK_APP', 'run.py')
-    FLASK_ENV = os.environ.get('FLASK_ENV', 'development')
-    DEBUG = os.environ.get('DEBUG', True)
+# Load environment variables from .env file
+load_dotenv()
 
-    # Database Configuration
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///lichviet.db'
+class BaseConfig:
+    """Base configuration"""
+    # Basic Flask Config
+    SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
+    FLASK_APP = os.getenv('FLASK_APP', 'run.py')
+    FLASK_ENV = os.getenv('FLASK_ENV', 'development')
+    DEBUG = bool(int(os.getenv('FLASK_DEBUG', 0)))
+    
+    # Server Config
+    HOST = os.getenv('FLASK_HOST', '0.0.0.0')
+    PORT = int(os.getenv('FLASK_PORT', 8088))
+    
+    # Database Config
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ECHO = False
-
-    # Application Configuration
-    TIMEZONE = 'Asia/Ho_Chi_Minh'
-    DEFAULT_LANGUAGE = 'vi'
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+    }
     
-    # Session Configuration
-    PERMANENT_SESSION_LIFETIME = timedelta(days=31)
-    SESSION_TYPE = 'filesystem'
+    # Timezone Config
+    TIMEZONE = os.getenv('TIMEZONE', 'Asia/Ho_Chi_Minh')
     
-    # Security Configuration
-    WTF_CSRF_ENABLED = True
-    WTF_CSRF_SECRET_KEY = os.environ.get('WTF_CSRF_SECRET_KEY') or 'csrf-secret-key'
-
-    # Mail Configuration (nếu cần gửi email nhắc nhở)
-    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
-    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', True)
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
-
-    # Pagination Configuration
-    EVENTS_PER_PAGE = 10
+    # Application Config
+    ITEMS_PER_PAGE = 20
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
     
-    # Cache Configuration
-    CACHE_TYPE = 'simple'
-    CACHE_DEFAULT_TIMEOUT = 300
+    # Security Config
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    PERMANENT_SESSION_LIFETIME = timedelta(days=7)
 
-class DevelopmentConfig(Config):
+class DevelopmentConfig(BaseConfig):
+    """Development configuration"""
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///lichviet.db')
     SQLALCHEMY_ECHO = True
-    TEMPLATES_AUTO_RELOAD = True
 
-class ProductionConfig(Config):
+class ProductionConfig(BaseConfig):
+    """Production configuration"""
     DEBUG = False
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_ECHO = False
     
-    # Production Database
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-    
-    # Security in Production
+    # Production specific settings
     SESSION_COOKIE_SECURE = True
     REMEMBER_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
 
-class TestingConfig(Config):
+class TestingConfig(BaseConfig):
+    """Testing configuration"""
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     WTF_CSRF_ENABLED = False
 
+# Dictionary with all configs
 config = {
     'development': DevelopmentConfig,
     'production': ProductionConfig,
