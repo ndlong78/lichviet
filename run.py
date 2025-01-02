@@ -1,24 +1,15 @@
-# run.py
-import os
-from app import create_app, db
+#!/usr/bin/env python3
+from app import create_app
 from dotenv import load_dotenv
+import os
 
-# Load environment variables
 load_dotenv()
 
-# Create app instance
 app = create_app(os.getenv('FLASK_ENV', 'default'))
 
-def main():
-    """Main entry point"""
-    with app.app_context():
-        db.create_all()
-    
+if __name__ == '__main__':
     app.run(
         host=app.config['HOST'],
         port=app.config['PORT'],
-        debug=app.config['DEBUG']
+        debug=app.config.get('DEBUG', False)
     )
-
-if __name__ == '__main__':
-    main()
