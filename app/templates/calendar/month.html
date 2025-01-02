@@ -1,40 +1,48 @@
 {% extends "base.html" %}
 
-{% block title %}Lịch Tháng {{ month }}/{{ year }} - Lịch Việt{% endblock %}
+{% block title %}Lịch Tháng - {{ month_name }} {{ year }}{% endblock %}
 
 {% block content %}
-<div class="calendar-month">
-    <div class="calendar-header">
-        <div class="weekday">CN</div>
-        <div class="weekday">T2</div>
-        <div class="weekday">T3</div>
-        <div class="weekday">T4</div>
-        <div class="weekday">T5</div>
-        <div class="weekday">T6</div>
-        <div class="weekday">T7</div>
+<div class="calendar-container">
+    <!-- Calendar Navigation -->
+    <div class="calendar-nav">
+        <a href="{{ url_for('main.month_view', year=prev_month.year, month=prev_month.month) }}" class="btn">
+            <i class="fas fa-chevron-left"></i> Tháng trước
+        </a>
+        <h2>{{ month_name }} {{ year }}</h2>
+        <a href="{{ url_for('main.month_view', year=next_month.year, month=next_month.month) }}" class="btn">
+            Tháng sau <i class="fas fa-chevron-right"></i>
+        </a>
     </div>
-    
-    <div class="calendar-grid">
-        {% for week in calendar_data %}
-        <div class="week">
-            {% for day in week %}
-            <div class="day {% if day.today %}today{% endif %} {% if day.other_month %}other-month{% endif %}">
-                <div class="day-header">
-                    <span class="day-number">{{ day.day }}</span>
-                    <span class="lunar-day">{{ day.lunar_day }}</span>
-                </div>
-                
-                <div class="events-list">
-                    {% for event in day.events %}
-                    <div class="event" style="background-color: {{ event.color }}">
-                        {{ event.title }}
+
+    <!-- Calendar Grid -->
+    <table class="calendar-grid">
+        <thead>
+            <tr>
+                {% for day in ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'] %}
+                <th>{{ day }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in calendar_data %}
+            <tr>
+                {% for day in week %}
+                <td class="{% if day.today %}today{% endif %} 
+                           {% if day.month != current_month %}other-month{% endif %}">
+                    <div class="day-number">{{ day.day }}</div>
+                    <div class="events-list">
+                        {% for event in day.events %}
+                        <div class="event" style="background-color: {{ event.category.color }}">
+                            {{ event.title }}
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                </div>
-            </div>
+                </td>
+                {% endfor %}
+            </tr>
             {% endfor %}
-        </div>
-        {% endfor %}
-    </div>
+        </tbody>
+    </table>
 </div>
 {% endblock %}

@@ -1,38 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}Lịch Tuần{% endblock %}
+{% block title %}Lịch Năm {{ year }}{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="text-center mb-4">Tuần: {{ start_week.strftime('%d/%m/%Y') }} - {{ end_week.strftime('%d/%m/%Y') }}</h2>
-        <div class="navigation-buttons mb-3">
-            <a href="{{ url_for('week_view', date=(start_week - timedelta(days=7)).strftime('%Y-%m-%d')) }}" 
-               class="btn btn-primary">&lt; Tuần trước</a>
-            <a href="{{ url_for('week_view', date=(start_week + timedelta(days=7)).strftime('%Y-%m-%d')) }}" 
-               class="btn btn-primary">Tuần sau &gt;</a>
-        </div>
-        
-        <div class="week-grid">
-            {% for i in range(7) %}
-            {% set current_date = start_week + timedelta(days=i) %}
-            <div class="card mb-2">
-                <div class="card-header">
-                    {{ current_date.strftime('%A') }}<br>
-                    {{ current_date.strftime('%d/%m/%Y') }}
-                </div>
-                <div class="card-body">
-                    {% for event in events %}
-                        {% if event.date == current_date %}
-                        <div class="event-item">
-                            <p>{{ event.description }}</p>
-                        </div>
-                        {% endif %}
+<div class="year-view">
+    <!-- Year Navigation -->
+    <div class="year-nav">
+        <a href="{{ url_for('main.year_view', year=year-1) }}" class="btn">
+            <i class="fas fa-chevron-left"></i> {{ year-1 }}
+        </a>
+        <h2>{{ year }}</h2>
+        <a href="{{ url_for('main.year_view', year=year+1) }}" class="btn">
+            {{ year+1 }} <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+
+    <!-- Months Grid -->
+    <div class="months-grid">
+        {% for month in range(1, 13) %}
+        <div class="month-box">
+            <h3>{{ month_names[month-1] }}</h3>
+            <table class="mini-calendar">
+                <thead>
+                    <tr>
+                        {% for day in ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'] %}
+                        <th>{{ day }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week in calendar_data[month] %}
+                    <tr>
+                        {% for day in week %}
+                        <td class="{% if day.today %}today{% endif %}">
+                            {{ day.day if day.month == month else '' }}
+                        </td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                </div>
-            </div>
-            {% endfor %}
+                </tbody>
+            </table>
         </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

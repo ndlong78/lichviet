@@ -1,25 +1,34 @@
 {% extends "base.html" %}
 
-{% block title %}Lịch Ngày {{ day }}/{{ month }}/{{ year }} - Lịch Việt{% endblock %}
+{% block title %}Lịch Ngày - {{ day.strftime('%d/%m/%Y') }}{% endblock %}
 
 {% block content %}
-<div class="calendar-day">
-    <div class="day-header">
-        <h2>{{ weekday }}, {{ day }}/{{ month }}/{{ year }}</h2>
-        <div class="lunar-date">
-            Âm lịch: {{ lunar_day }}/{{ lunar_month }}/{{ lunar_year }}
-        </div>
+<div class="day-view">
+    <!-- Day Navigation -->
+    <div class="day-nav">
+        <a href="{{ url_for('main.day_view', date=prev_day.strftime('%Y-%m-%d')) }}" class="btn">
+            <i class="fas fa-chevron-left"></i> Ngày trước
+        </a>
+        <h2>{{ day.strftime('%A, %d/%m/%Y') }}</h2>
+        <a href="{{ url_for('main.day_view', date=next_day.strftime('%Y-%m-%d')) }}" class="btn">
+            Ngày sau <i class="fas fa-chevron-right"></i>
+        </a>
     </div>
 
-    <div class="timeline">
+    <!-- Time Grid -->
+    <div class="time-grid">
         {% for hour in range(0, 24) %}
-        <div class="hour-slot">
-            <div class="hour-label">{{ "%02d:00"|format(hour) }}</div>
+        <div class="hour-row">
+            <div class="time">{{ '%02d:00'|format(hour) }}</div>
             <div class="events">
-                {% for event in events[hour] %}
-                <div class="event" style="background-color: {{ event.color }}">
-                    <div class="event-time">{{ event.start_time }} - {{ event.end_time }}</div>
-                    <div class="event-title">{{ event.title }}</div>
+                {% for event in events.get(hour, []) %}
+                <div class="event" style="background-color: {{ event.category.color }}">
+                    <div class="event-time">
+                        {{ event.time.strftime('%H:%M') }}
+                    </div>
+                    <div class="event-title">
+                        {{ event.title }}
+                    </div>
                 </div>
                 {% endfor %}
             </div>
