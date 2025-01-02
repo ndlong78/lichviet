@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Lịch Tuần{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="text-center mb-4">Tuần: {{ start_week.strftime('%d/%m/%Y') }} - {{ end_week.strftime('%d/%m/%Y') }}</h2>
+        <div class="navigation-buttons mb-3">
+            <a href="{{ url_for('week_view', date=(start_week - timedelta(days=7)).strftime('%Y-%m-%d')) }}" 
+               class="btn btn-primary">&lt; Tuần trước</a>
+            <a href="{{ url_for('week_view', date=(start_week + timedelta(days=7)).strftime('%Y-%m-%d')) }}" 
+               class="btn btn-primary">Tuần sau &gt;</a>
+        </div>
+        
+        <div class="week-grid">
+            {% for i in range(7) %}
+            {% set current_date = start_week + timedelta(days=i) %}
+            <div class="card mb-2">
+                <div class="card-header">
+                    {{ current_date.strftime('%A') }}<br>
+                    {{ current_date.strftime('%d/%m/%Y') }}
+                </div>
+                <div class="card-body">
+                    {% for event in events %}
+                        {% if event.date == current_date %}
+                        <div class="event-item">
+                            <p>{{ event.description }}</p>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+/* General Styles */
+body {
+    background-color: #f5f5f5;
+}
+
+/* Calendar Styles */
+.calendar-overview {
+    margin: 20px 0;
+}
+
+.event-item {
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+/* Week View Styles */
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+/* Month View Styles */
+.month-calendar td {
+    height: 100px;
+    vertical-align: top;
+}
+
+.month-calendar .event-item {
+    font-size: 0.8em;
+    margin: 2px;
+    padding: 2px 5px;
+}

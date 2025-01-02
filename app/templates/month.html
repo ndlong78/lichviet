@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Lịch Tháng {{ month }}/{{ year }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="text-center mb-4">Tháng {{ month }}/{{ year }}</h2>
+        <div class="navigation-buttons mb-3">
+            {% set prev_month = month - 1 if month > 1 else 12 %}
+            {% set prev_year = year if month > 1 else year - 1 %}
+            {% set next_month = month + 1 if month < 12 else 1 %}
+            {% set next_year = year if month < 12 else year + 1 %}
+            
+            <a href="{{ url_for('month_view', year=prev_year, month=prev_month) }}" 
+               class="btn btn-primary">&lt; Tháng trước</a>
+            <a href="{{ url_for('month_view', year=next_year, month=next_month) }}" 
+               class="btn btn-primary">Tháng sau &gt;</a>
+        </div>
+        
+        <div class="month-calendar">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>CN</th>
+                        <th>T2</th>
+                        <th>T3</th>
+                        <th>T4</th>
+                        <th>T5</th>
+                        <th>T6</th>
+                        <th>T7</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Calendar logic will be handled in Python -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
