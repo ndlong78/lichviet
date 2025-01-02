@@ -1,0 +1,19 @@
+<div class="calendar-nav">
+    <div class="nav-left">
+        <button class="btn-prev">‹</button>
+        <h2 class="current-date">{{ current_date }}</h2>
+        <button class="btn-next">›</button>
+    </div>
+    
+    <div class="view-options">
+        <button class="btn-view {% if view == 'day' %}active{% endif %}" data-view="day">Ngày</button>
+        <button class="btn-view {% if view == 'week' %}active{% endif %}" data-view="week">Tuần</button>
+        <button class="btn-view {% if view == 'month' %}active{% endif %}" data-view="month">Tháng</button>
+        <button class="btn-view {% if view == 'year' %}active{% endif %}" data-view="year">Năm</button>
+    </div>
+    
+    <div class="nav-right">
+        <button class="btn-today">Hôm nay</button>
+        <button class="btn-new-event">+ Sự kiện mới</button>
+    </div>
+</div>

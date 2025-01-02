@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Lịch Ngày {{ day }}/{{ month }}/{{ year }} - Lịch Việt{% endblock %}
+
+{% block content %}
+<div class="calendar-day">
+    <div class="day-header">
+        <h2>{{ weekday }}, {{ day }}/{{ month }}/{{ year }}</h2>
+        <div class="lunar-date">
+            Âm lịch: {{ lunar_day }}/{{ lunar_month }}/{{ lunar_year }}
+        </div>
+    </div>
+
+    <div class="timeline">
+        {% for hour in range(0, 24) %}
+        <div class="hour-slot">
+            <div class="hour-label">{{ "%02d:00"|format(hour) }}</div>
+            <div class="events">
+                {% for event in events[hour] %}
+                <div class="event" style="background-color: {{ event.color }}">
+                    <div class="event-time">{{ event.start_time }} - {{ event.end_time }}</div>
+                    <div class="event-title">{{ event.title }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
