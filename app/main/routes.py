@@ -1,73 +1,99 @@
-from flask import render_template, redirect, url_for, request, jsonify
+from flask import render_template, redirect, url_for, request
 from datetime import datetime, timedelta
 from calendar import monthcalendar
-from . import main
+from app.main import bp
 from app.models import Event, Category
-from app.utils.date_utils import (
-    get_lunar_date,
-    get_vietnamese_month_name,
-    get_vietnamese_weekday
-)
-@main.route('/calendar/month/<int:year>/<int:month>')
+from app.utils.date_utils import get_lunar_date, get_vietnamese_month_name
+
+@bp.route('/')
+def index():
+    """Trang chủ"""
+    return redirect(url_for('main.calendar'))
+
+@bp.route('/calendar')
+def calendar():
+    """Calendar view mặc định - chuyển đến view tháng hiện tại"""
+    today = datetime.now()
+    return redirect(url_for('main.month_view', 
+                          year=today.year, 
+                          month=today.month))
+
+@bp.route('/calendar/month')
+@bp.route('/calendar/month/<int:year>/<int:month>')
 def month_view(year=None, month=None):
+    """Hiển thị lịch theo tháng"""
     if year is None or month is None:
         today = datetime.now()
         year = today.year
         month = today.month
 
     # Tính toán tháng trước và tháng sau
-    first_day = datetime(year, month, 1)
     if month == 1:
-        prev_month = datetime(year-1, 12, 1)
+        prev_month = (year - 1, 12)
     else:
-        prev_month = datetime(year, month-1, 1)
-    
+        prev_month = (year, month - 1)
+        
     if month == 12:
-        next_month = datetime(year+1, 1, 1)
+        next_month = (year + 1, 1)
     else:
-        next_month = datetime(year, month+1, 1)
+        next_month = (year, month + 1)
 
-    # Lấy dữ liệu lịch
-    calendar_data = get_month_calendar(year, month)
+    # Lấy dữ liệu calendar
+    calendar_data = monthcalendar(year, month)
     
-    # Context cho template
-    context = {
-        'year': year,
-        'month': month,
-        'month_name': get_vietnamese_month_name(month),
-        'calendar_data': calendar_data,
-        'prev_month': prev_month,
-        'next_month': next_month,
-        'today': datetime.now().date()
-    }
-    
-    return render_template('calendar/month.html', **context)
+    # Lấy events trong tháng
+    events = Event.get_month_events(year, month)
 
-# Utility functions for templates
-@main.app_template_filter('lunar_date')
-def lunar_date_filter(date):
-    """Convert solar date to lunar date"""
-    return get_lunar_date(date)
+    return render_template('calendar/month.html',
+                         year=year,
+                         month=month,
+                         month_name=get_vietnamese_month_name(month),
+                         calendar_data=calendar_data,
+                         events=events,
+                         prev_month=prev_month,
+                         next_month=next_month)
 
-@main.app_context_processor
-def utility_processor():
-    def get_events_for_date(date):
-        """Get events for a specific date"""
-        return Event.query.filter(
-            Event.start_time >= date,
-            Event.start_time < date + timedelta(days=1)
-        ).all()
-    
-    def is_today(date):
-        """Check if date is today"""
-        return date.date() == datetime.now().date()
-    
-    def is_other_month(date, current_month):
-        """Check if date is from another month"""
-        return date.month != current_month
-    
-    return dict(
-        get_events_for_date=get_events_for_date,
-        is_today=is_today,
-        is_other_month=is_other_month
-    )
+@bp.route('/calendar/week')
+@bp.route('/calendar/week/<int:year>/<int:week>')
+def week_view(year=None, week=None):
+    """Hiển thị lịch theo tuần"""
+    if year is None or week is None:
+        today = datetime.now()
+        year = today.year
+        week = today.isocalendar()[1]
+
+    return render_template('calendar/week.html',
+                         year=year,
+                         week=week)
+
+@bp.route('/calendar/day')
+@bp.route('/calendar/day/<int:year>/<int:month>/<int:day>')
+def day_view(year=None, month=None, day=None):
+    """Hiển thị lịch theo ngày"""
+    if year is None or month is None or day is None:
+        today = datetime.now()
+        year = today.year
+        month = today.month
+        day = today.day
+
+    current_date = datetime(year, month, day)
+    events = Event.get_day_events(current_date)
+
+    return render_template('calendar/day.html',
+                         current_date=current_date,
+                         events=events)
+
+@bp.route('/calendar/year')
+@bp.route('/calendar/year/<int:year>')
+def year_view(year=None):
+    """Hiển thị lịch theo năm"""
+    if year is None:
+        year = datetime.now().year
+
+    months_data = {}
+    for month in range(1, 13):
+        months_data[month] = monthcalendar(year, month)
+
+    return render_template('calendar/year.html',
+                         year=year,
+                         months_data=months_data)

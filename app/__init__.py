@@ -1,26 +1,29 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from config import config
+from config import Config
 
-# Initialize extensions
 db = SQLAlchemy()
 migrate = Migrate()
 
-def create_app(config_name='default'):
+def create_app(config_class=Config):
     app = Flask(__name__)
-    
-    # Load configuration
-    app.config.from_object(config[config_name])
-    
+    app.config.from_object(config_class)
+
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    
-    # Import và đăng ký blueprint
-    with app.app_context():
-        # Import blueprint ở đây để tránh circular import
-        from app.main import main as main_blueprint
-        app.register_blueprint(main_blueprint)
-    
+
+    # Register blueprints
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp, url_prefix='')
+
+    # Ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
+
     return app
+
+from app import models
