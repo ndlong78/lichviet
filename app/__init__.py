@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from datetime import datetime
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -23,8 +24,8 @@ def create_app(config_class):
         pass
     
     # Register the datetime filter
-    def datetime_filter(value, format='%Y-%m-%d %H:%M:%S'):
-        if hasattr(value, 'strftime'):
+    def datetime_filter(value, format='%Y-%m-%d %H:%M:%S', *args, **kwargs):
+        if isinstance(value, datetime):
             return value.strftime(format)
         return value
     
