@@ -22,6 +22,12 @@ def create_app(config_class):
     except OSError:
         pass
     
+    # Register the datetime filter
+    def datetime_filter(value, format='%Y-%m-%d %H:%M:%S'):
+        return value.strftime(format)
+    
+    app.jinja_env.filters['datetime'] = datetime_filter
+    
     return app
 
 from app import models
