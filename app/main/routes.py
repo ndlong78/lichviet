@@ -49,6 +49,12 @@ def month_view(year=None, month=None):
     # Lấy events trong tháng
     events = Event.get_month_events(year, month)
 
+    # Chuyển đổi day thành đối tượng datetime
+    for week in calendar_data:
+        for i in range(len(week)):
+            if week[i] != 0:
+                week[i] = datetime(year, month, week[i])
+
     return render_template('calendar/month.html',
                          year=year,
                          month=month,
