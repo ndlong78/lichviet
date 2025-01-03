@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "macros/calendar_macros.html" import render_time_slot %}
+
+{% block title %}Lịch Ngày - {{ current_date.strftime('%d/%m/%Y') }}{% endblock %}
+
+{% block content %}
+<div class="day-view">
+    <div class="day-header">
+        <div class="date-info">
+            <h2>{{ current_date.strftime('%A, %d/%m/%Y') }}</h2>
+            <div class="lunar-date">
+                {{ get_lunar_date(current_date) }}
+            </div>
+        </div>
+
+        <div class="day-navigation">
+            <a href="{{ url_for('main.day_view', date=prev_day.strftime('%Y-%m-%d')) }}" 
+               class="nav-btn"><i class="fas fa-chevron-left"></i></a>
+            <a href="{{ url_for('main.day_view') }}" 
+               class="nav-btn today-btn">Hôm nay</a>
+            <a href="{{ url_for('main.day_view', date=next_day.strftime('%Y-%m-%d')) }}" 
+               class="nav-btn"><i class="fas fa-chevron-right"></i></a>
+        </div>
+    </div>
+
+    <div class="day-grid">
+        {% for hour in range(0, 24) %}
+            {{ render_time_slot(hour, get_events_for_hour(current_date, hour)) }}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
