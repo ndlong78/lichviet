@@ -6,19 +6,19 @@
     <div class="nav-links">
         <a href="{{ url_for('main.day_view') }}" 
            class="nav-link {% if request.endpoint == 'main.day_view' %}active{% endif %}">
-           <i class="fas fa-calendar-day"></i> Ngày
+            <i class="fas fa-calendar-day"></i> Ngày
         </a>
         <a href="{{ url_for('main.week_view') }}"
            class="nav-link {% if request.endpoint == 'main.week_view' %}active{% endif %}">
-           <i class="fas fa-calendar-week"></i> Tuần
+            <i class="fas fa-calendar-week"></i> Tuần
         </a>
         <a href="{{ url_for('main.month_view') }}"
            class="nav-link {% if request.endpoint == 'main.month_view' %}active{% endif %}">
-           <i class="fas fa-calendar-alt"></i> Tháng
+            <i class="fas fa-calendar-alt"></i> Tháng
         </a>
         <a href="{{ url_for('main.year_view') }}"
            class="nav-link {% if request.endpoint == 'main.year_view' %}active{% endif %}">
-           <i class="fas fa-calendar"></i> Năm
+            <i class="fas fa-calendar"></i> Năm
         </a>
     </div>
 

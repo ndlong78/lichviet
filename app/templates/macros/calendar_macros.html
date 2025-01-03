@@ -1,36 +1,19 @@
-{% macro render_time_slot(hour, events) %}
-<div class="time-slot" data-hour="{{ hour }}">
-    <div class="time-label">
-        {{ '%02d:00'|format(hour) }}
+{% macro render_date(date, events=[], is_today=False, is_other_month=False) %}
+<div class="date-cell {% if is_today %}today{% endif %} 
+            {% if is_other_month %}other-month{% endif %}"
+     data-date="{{ date.strftime('%Y-%m-%d') }}">
+    <div class="date-number">
+        {{ date.day }}
+        <small class="lunar-date">{{ get_lunar_date(date) }}</small>
     </div>
     <div class="events-container">
         {% for event in events %}
-        <div class="event" 
-             data-event-id="{{ event.id }}"
-             style="background-color: {{ event.category.color }}">
-            <div class="event-time">{{ event.start_time.strftime('%H:%M') }}</div>
-            <div class="event-title">{{ event.title }}</div>
+        <div class="event-item" 
+             style="background-color: {{ event.category.color }}"
+             data-event-id="{{ event.id }}">
+            {{ event.title }}
         </div>
         {% endfor %}
     </div>
-</div>
-{% endmacro %}
-
-{% macro render_event(event) %}
-<div class="event" 
-     data-event-id="{{ event.id }}"
-     style="background-color: {{ event.category.color }}">
-    <div class="event-time">
-        {{ event.start_time.strftime('%H:%M') }}
-        {% if event.end_time %}
-        - {{ event.end_time.strftime('%H:%M') }}
-        {% endif %}
-    </div>
-    <div class="event-title">{{ event.title }}</div>
-    {% if event.location %}
-    <div class="event-location">
-        <i class="fas fa-map-marker-alt"></i> {{ event.location }}
-    </div>
-    {% endif %}
 </div>
 {% endmacro %}
