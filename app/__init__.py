@@ -24,7 +24,9 @@ def create_app(config_class):
     
     # Register the datetime filter
     def datetime_filter(value, format='%Y-%m-%d %H:%M:%S'):
-        return value.strftime(format)
+        if hasattr(value, 'strftime'):
+            return value.strftime(format)
+        return value
     
     app.jinja_env.filters['datetime'] = datetime_filter
     
