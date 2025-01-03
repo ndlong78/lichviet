@@ -1,6 +1,5 @@
 {% macro render_date(date, events=[], is_today=False, is_other_month=False) %}
-<div class="date-cell {% if is_today %}today{% endif %} 
-            {% if is_other_month %}other-month{% endif %}"
+<div class="date-cell {% if is_today %}today{% endif %} {% if is_other_month %}other-month{% endif %}"
      data-date="{{ date.strftime('%Y-%m-%d') }}">
     <div class="date-number">
         {{ date.day }}
