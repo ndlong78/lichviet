@@ -10,13 +10,13 @@
 </head>
 <body>
     <div class="container">
-        {% include 'calendar/components/navigation.html' %}
+        {% include 'components/navigation.html' %}
         
         <main class="main-content">
             {% block content %}{% endblock %}
         </main>
 
-        {% include 'calendar/components/event_modal.html' %}
+        {% include 'components/event_modal.html' %}
     </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
