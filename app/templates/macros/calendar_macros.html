@@ -1,0 +1,39 @@
+{% macro render_date(date, events=[], is_today=False, is_other_month=False) %}
+<div class="date-cell {% if is_today %}today{% endif %} {% if is_other_month %}other-month{% endif %}"
+     data-date="{{ date.strftime('%Y-%m-%d') }}">
+    <div class="date-number">
+        {{ date.day }}
+        <small class="lunar-date">{{ date|lunar_date }}</small>
+    </div>
+    <div class="events-container">
+        {% for event in events[:3] %}
+        <div class="event-item" 
+             style="background-color: {{ event.category.color }}"
+             data-event-id="{{ event.id }}"
+             title="{{ event.title }}">
+            <span class="event-time">{{ event.start_time.strftime('%H:%M') }}</span>
+            <span class="event-title">{{ event.title }}</span>
+        </div>
+        {% endfor %}
+        {% if events|length > 3 %}
+        <div class="more-events">+{{ events|length - 3 }} sự kiện khác</div>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_month_mini(year, month, events=[]) %}
+<table class="mini-calendar">
+    <thead>
+        <tr>
+            {% for day in ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'] %}
+            <th>{{ day }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for week in get_month_calendar(year, month) %}
+        <tr>
+            {% for date in week %}
+            <td class="{% if is_today(date) %}today{% endif %} 
+                       {% if date

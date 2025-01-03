@@ -1,0 +1,8 @@
+<div class="date-picker">
+    <input type="date" id="date-picker" 
+           value="{{ current_date.strftime('%Y-%m-%d') }}"
+           onchange="navigateToDate(this.value)">
+    <button class="btn btn-today" onclick="goToToday()">
+        Hôm nay
+    </button>
+</div>

@@ -1,0 +1,49 @@
+<div id="event-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">Thêm Sự Kiện Mới</h3>
+            <span class="close">&times;</span>
+        </div>
+        
+        <form id="event-form" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="form-group">
+                <label for="event-title">Tiêu đề</label>
+                <input type="text" id="event-title" name="title" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="event-start">Bắt đầu</label>
+                    <input type="datetime-local" id="event-start" name="start_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-end">Kết thúc</label>
+                    <input type="datetime-local" id="event-end" name="end_time" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="event-category">Danh mục</label>
+                <select id="event-category" name="category_id">
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" data-color="{{ category.color }}">
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="event-description">Mô tả</label>
+                <textarea id="event-description" name="description" rows="3"></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="hideEventModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>

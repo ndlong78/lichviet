@@ -1,43 +1,34 @@
 {% extends "base.html" %}
+{% from "macros/calendar_macros.html" import render_date %}
 
-{% block title %}Lịch Tháng - {{ month_name }} {{ year }}{% endblock %}
+{% block title %}Lịch Tháng {{ month_name }} {{ year }}{% endblock %}
 
 {% block content %}
-<div class="calendar-container">
-    <!-- Calendar Navigation -->
-    <div class="calendar-nav">
-        <a href="{{ url_for('main.month_view', year=prev_month.year, month=prev_month.month) }}" class="btn">
-            <i class="fas fa-chevron-left"></i> Tháng trước
-        </a>
-        <h2>{{ month_name }} {{ year }}</h2>
-        <a href="{{ url_for('main.month_view', year=next_month.year, month=next_month.month) }}" class="btn">
-            Tháng sau <i class="fas fa-chevron-right"></i>
-        </a>
+<div class="month-view">
+    <div class="month-header">
+        <h2>
+            {{ month_name }} {{ year }}
+            <small class="lunar-month">Tháng {{ lunar_month }} năm {{ lunar_year }}</small>
+        </h2>
     </div>
 
-    <!-- Calendar Grid -->
-    <table class="calendar-grid">
+    <table class="month-grid">
         <thead>
             <tr>
-                {% for day in ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'] %}
-                <th>{{ day }}</th>
+                {% for weekday in ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'] %}
+                <th>{{ weekday }}</th>
                 {% endfor %}
             </tr>
         </thead>
         <tbody>
             {% for week in calendar_data %}
             <tr>
-                {% for day in week %}
-                <td class="{% if day.today %}today{% endif %} 
-                           {% if day.month != current_month %}other-month{% endif %}">
-                    <div class="day-number">{{ day.day }}</div>
-                    <div class="events-list">
-                        {% for event in day.events %}
-                        <div class="event" style="background-color: {{ event.category.color }}">
-                            {{ event.title }}
-                        </div>
-                        {% endfor %}
-                    </div>
+                {% for date in week %}
+                <td>
+                    {{ render_date(date, 
+                                 get_events_for_date(date), 
+                                 is_today=is_today(date),
+                                 is_other_month=is_other_month(date, current_month)) }}
                 </td>
                 {% endfor %}
             </tr>

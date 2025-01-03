@@ -1,0 +1,27 @@
+<nav class="calendar-nav">
+    <div class="nav-brand">
+        <a href="{{ url_for('main.index') }}">Lịch Việt</a>
+    </div>
+    
+    <div class="nav-views">
+        <a href="{{ url_for('main.day_view') }}" class="nav-link {% if view == 'day' %}active{% endif %}">
+            <i class="fas fa-calendar-day"></i> Ngày
+        </a>
+        <a href="{{ url_for('main.week_view') }}" class="nav-link {% if view == 'week' %}active{% endif %}">
+            <i class="fas fa-calendar-week"></i> Tuần
+        </a>
+        <a href="{{ url_for('main.month_view') }}" class="nav-link {% if view == 'month' %}active{% endif %}">
+            <i class="fas fa-calendar-alt"></i> Tháng
+        </a>
+        <a href="{{ url_for('main.year_view') }}" class="nav-link {% if view == 'year' %}active{% endif %}">
+            <i class="fas fa-calendar"></i> Năm
+        </a>
+    </div>
+
+    <div class="nav-actions">
+        <button class="btn btn-primary" onclick="showEventModal()">
+            <i class="fas fa-plus"></i> Thêm sự kiện
+        </button>
+        {% include 'calendar/components/date_picker.html' %}
+    </div>
+</nav>
