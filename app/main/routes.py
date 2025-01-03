@@ -70,7 +70,7 @@ def month_view(year=None, month=None):
 @bp.route('/calendar/week/<int:year>/<int:week>')
 def week_view(year=None, week=None):
     """Hiển thị lịch theo tuần"""
-    if year is None hoặc tuần chưa được xác định:
+    if year is None or week is None:
         today = datetime.now()
         year = today.year
         week = today.isocalendar()[1]
@@ -83,7 +83,7 @@ def week_view(year=None, week=None):
 @bp.route('/calendar/day/<int:year>/<int:month>/<int:day>')
 def day_view(year=None, month=None, day=None):
     """Hiển thị lịch theo ngày"""
-    if year is None hoặc tháng chưa được xác định hoặc ngày chưa được xác định:
+    if year is None or month is None or day is None:
         today = datetime.now()
         year = today.year
         month = today.month
