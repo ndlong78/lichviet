@@ -33,7 +33,7 @@
             {% for day in week %}
             {% if day != 0 %}
                 {{ render_date(
-                    date=day|datetime(year, month),
+                    date=day|datetime('%Y-%m-%d', year, month),
                     events=events|filter_events_by_date(day, month, year),
                     is_today=is_today(day, month, year),
                     is_other_month=false

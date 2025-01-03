@@ -3,7 +3,12 @@ from datetime import datetime, timedelta
 from calendar import monthcalendar
 from app.main import bp
 from app.models import Event, Category
-from app.utils.date_utils import get_lunar_date, get_vietnamese_month_name
+from app.utils.date_utils import get_vietnamese_month_name
+
+# Định nghĩa hàm is_today
+def is_today(day, month, year):
+    today = datetime.today()
+    return today.year == year and today.month == month and today.day == day
 
 @bp.route('/')
 def index():
@@ -51,7 +56,8 @@ def month_view(year=None, month=None):
                          calendar_data=calendar_data,
                          events=events,
                          prev_month=prev_month,
-                         next_month=next_month)
+                         next_month=next_month,
+                         is_today=is_today)
 
 @bp.route('/calendar/week')
 @bp.route('/calendar/week/<int:year>/<int:week>')

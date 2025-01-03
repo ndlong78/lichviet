@@ -30,6 +30,14 @@ def create_app(config_class):
         return value
     
     app.jinja_env.filters['datetime'] = datetime_filter
+
+    # Register the filter_events_by_date filter
+    def filter_events_by_date(events, day, month, year):
+        start_date = datetime(year, month, day)
+        end_date = datetime(year, month, day + 1)
+        return [event for event in events if start_date <= event.start_time < end_date]
+    
+    app.jinja_env.filters['filter_events_by_date'] = filter_events_by_date
     
     return app
 
