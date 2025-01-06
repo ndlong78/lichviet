@@ -64,7 +64,7 @@ def month_view(year=None, month=None):
                          prev_month=prev_month,
                          next_month=next_month,
                          is_today=is_today,
-                         get_lunar_date=get_lunar_date)
+                         get_lunar_date=get_lunar_date)  # Pass get_lunar_date to the template context
 
 @bp.route('/calendar/week')
 @bp.route('/calendar/week/<int:year>/<int:week>')
