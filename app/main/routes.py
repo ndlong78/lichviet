@@ -5,19 +5,19 @@ from app.main import bp
 from app.models import Event, Category
 from app.utils.date_utils import get_vietnamese_month_name, get_lunar_date
 
-# Định nghĩa hàm is_today
+# Define the is_today function
 def is_today(day, month, year):
     today = datetime.today()
     return today.year == year and today.month == month and today.day == day
 
 @bp.route('/')
 def index():
-    """Trang chủ"""
+    """Home page"""
     return redirect(url_for('main.calendar'))
 
 @bp.route('/calendar')
 def calendar():
-    """Calendar view mặc định - chuyển đến view tháng hiện tại"""
+    """Default calendar view - redirect to the current month view"""
     today = datetime.now()
     return redirect(url_for('main.month_view', 
                           year=today.year, 
@@ -26,13 +26,13 @@ def calendar():
 @bp.route('/calendar/month')
 @bp.route('/calendar/month/<int:year>/<int:month>')
 def month_view(year=None, month=None):
-    """Hiển thị lịch theo tháng"""
+    """Display calendar by month"""
     if year is None or month is None:
         today = datetime.now()
         year = today.year
         month = today.month
 
-    # Tính toán tháng trước và tháng sau
+    # Calculate the previous and next months
     if month == 1:
         prev_month = (year - 1, 12)
     else:
@@ -43,13 +43,13 @@ def month_view(year=None, month=None):
     else:
         next_month = (year, month + 1)
 
-    # Lấy dữ liệu calendar
+    # Get calendar data
     calendar_data = monthcalendar(year, month)
     
-    # Lấy events trong tháng
+    # Get events in the month
     events = Event.get_month_events(year, month)
 
-    # Chuyển đổi day thành đối tượng datetime
+    # Convert day to datetime object
     for week in calendar_data:
         for i in range(len(week)):
             if week[i] != 0:
@@ -64,13 +64,13 @@ def month_view(year=None, month=None):
                          prev_month=prev_month,
                          next_month=next_month,
                          is_today=is_today,
-                         get_lunar_date=get_lunar_date)  # Truyền hàm get_lunar_date vào context
+                         get_lunar_date=get_lunar_date)
 
 @bp.route('/calendar/week')
 @bp.route('/calendar/week/<int:year>/<int:week>')
 def week_view(year=None, week=None):
-    """Hiển thị lịch theo tuần"""
-    if year is None hoặc week is None:
+    """Display calendar by week"""
+    if year is None or week is None:
         today = datetime.now()
         year = today.year
         week = today.isocalendar()[1]
@@ -82,8 +82,8 @@ def week_view(year=None, week=None):
 @bp.route('/calendar/day')
 @bp.route('/calendar/day/<int:year>/<int:month>/<int:day>')
 def day_view(year=None, month=None, day=None):
-    """Hiển thị lịch theo ngày"""
-    if year is None hoặc month is None hoặc day is None:
+    """Display calendar by day"""
+    if year is None or month is None or day is None:
         today = datetime.now()
         year = today.year
         month = today.month
@@ -99,7 +99,7 @@ def day_view(year=None, month=None, day=None):
 @bp.route('/calendar/year')
 @bp.route('/calendar/year/<int:year>')
 def year_view(year=None):
-    """Hiển thị lịch theo năm"""
+    """Display calendar by year"""
     if year is None:
         year = datetime.now().year
 

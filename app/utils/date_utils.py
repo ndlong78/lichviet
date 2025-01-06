@@ -10,16 +10,16 @@ def get_vietnamese_month_name(month):
 
 def get_lunar_date(date=None):
     if date is None:
-        date = datetime.now()  # Sử dụng ngày hiện tại nếu không cung cấp ngày
+        date = datetime.now()  # Use the current date if no date is provided
 
-    # Giả sử bạn có một logic để tính toán ngày âm lịch từ ngày dương lịch
-    # Đây chỉ là ví dụ, bạn cần thay thế bằng logic thực tế của bạn.
-    lunar_date = date  # Thay thế bằng logic thực tế
+    # Assume you have a logic to calculate the lunar date from the solar date
+    # This is just an example, you need to replace it with your actual logic.
+    lunar_date = date  # Replace with actual logic
     lunar_day = lunar_date.day
     lunar_month = lunar_date.month
     lunar_year = lunar_date.year
     return f"{lunar_day}/{lunar_month}/{lunar_year}"
 
-# Mẫu sử dụng hàm get_lunar_date
+# Example usage of the get_lunar_date function
 if __name__ == "__main__":
     print("Lunar date for today:", get_lunar_date())
