@@ -86,7 +86,7 @@ def week_view(year=None, week=None):
 @bp.route('/calendar/day/<int:year>/<int:month>/<int:day>')
 def day_view(year=None, month=None, day=None):
     """Display calendar by day"""
-    if year is None or month is None or day is None:
+    if year is None hoặc month is None hoặc day is None:
         today = datetime.now()
         year = today.year
         month = today.month
