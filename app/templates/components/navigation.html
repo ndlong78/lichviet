@@ -1,30 +1,30 @@
 <nav class="main-nav">
     <div class="nav-brand">
-        <a href="{{ url_for('main.index') }}">Lịch Việt</a>
+        <a href="{{ url_for('main.index') }}">Vietnamese Calendar</a>
     </div>
     
     <div class="nav-links">
         <a href="{{ url_for('main.day_view') }}" 
            class="nav-link {% if request.endpoint == 'main.day_view' %}active{% endif %}">
-            <i class="fas fa-calendar-day"></i> Ngày
+            <i class="fas fa-calendar-day"></i> Day
         </a>
         <a href="{{ url_for('main.week_view') }}"
            class="nav-link {% if request.endpoint == 'main.week_view' %}active{% endif %}">
-            <i class="fas fa-calendar-week"></i> Tuần
+            <i class="fas fa-calendar-week"></i> Week
         </a>
         <a href="{{ url_for('main.month_view') }}"
            class="nav-link {% if request.endpoint == 'main.month_view' %}active{% endif %}">
-            <i class="fas fa-calendar-alt"></i> Tháng
+            <i class="fas fa-calendar-alt"></i> Month
         </a>
         <a href="{{ url_for('main.year_view') }}"
            class="nav-link {% if request.endpoint == 'main.year_view' %}active{% endif %}">
-            <i class="fas fa-calendar"></i> Năm
+            <i class="fas fa-calendar"></i> Year
         </a>
     </div>
 
     <div class="nav-actions">
         <button class="btn add-event-btn" onclick="showEventModal()">
-            <i class="fas fa-plus"></i> Thêm sự kiện
+            <i class="fas fa-plus"></i> Add Event
         </button>
     </div>
 </nav>
