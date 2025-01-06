@@ -1,22 +1,26 @@
+
+```markdown
 Tài Liệu Ứng Dụng Lịch Việt
+
 1. Tổng Quan
 1.1 Giới thiệu
-Lịch Việt là một ứng dụng web được phát triển bằng Python Flask, cho phép người dùng quản lý lịch theo ngày, tuần, tháng và năm. Ứng dụng hỗ trợ cả lịch dương và âm lịch.
+Lịch Việt là một ứng dụng web được phát triển bằng Python Flask, cho phép người dùng quản lý lịch theo ngày, tuần, tháng và năm. Ứng dụng hỗ trợ cả lịch âm và các sự kiện đặc biệt.
 
 1.2 Tính năng chính
-Xem lịch theo ngày/tuần/tháng/năm
-Quản lý sự kiện và lịch hẹn
-Hiển thị lịch âm
-Quản lý danh mục sự kiện
-API cho tích hợp bên ngoài
+- Xem lịch theo ngày/tuần/tháng/năm
+- Quản lý sự kiện và lịch hẹn
+- Hiển thị lịch âm
+- Quản lý danh mục sự kiện
+- API cho tích hợp bên ngoài
+
 2. Cài Đặt và Triển Khai
 2.1 Yêu cầu hệ thống
-Code
-Python 3.8+
-SQLite/PostgreSQL
-Virtual Environment
+- Python 3.8+
+- SQLite/PostgreSQL
+- Virtual Environment
+
 2.2 Cài đặt
-bash
+```bash
 # Clone repository
 git clone https://github.com/ndlong78/lichviet.git
 cd lichviet
@@ -37,9 +41,11 @@ cp .env.example .env
 flask db init
 flask db migrate -m "Initial migration"
 flask db upgrade
+```
+
 3. Cấu Trúc Dự Án
 3.1 Cấu trúc thư mục
-Code
+```plaintext
 lichviet/
 ├── app/                    # Thư mục chính của ứng dụng
 │   ├── __init__.py        # Khởi tạo ứng dụng Flask
@@ -58,73 +64,57 @@ lichviet/
 ├── config.py            # Cấu hình
 ├── requirements.txt     # Dependencies
 └── run.py              # Entry point
-3.2 Components chính
-Models (app/models.py)
-Python
-# Event Model
-class Event:
-    - id: Integer (Primary Key)
-    - title: String
-    - description: Text
-    - start_time: DateTime
-    - end_time: DateTime
-    - category_id: ForeignKey
-    - created_at: DateTime
-    - updated_at: DateTime
+```
 
-# Category Model
-class Category:
-    - id: Integer (Primary Key)
-    - name: String
-    - color: String
-    - description: String
+3.2 Components chính
+- **Models (app/models.py)**
+    - **Event Model**
+        - id: Integer (Primary Key)
+        - title: String
+        - description: Text
+        - start_time: DateTime
+        - end_time: DateTime
+        - category_id: ForeignKey
+        - created_at: DateTime
+        - updated_at: DateTime
+    - **Category Model**
+        - id: Integer (Primary Key)
+        - name: String
+        - color: String
+        - description: String
+
 4. API Documentation
 4.1 RESTful API Endpoints
-Events API
-Code
-GET /api/events
-- Lấy danh sách sự kiện
-- Params: start_date, end_date, category
+- **Events API**
+    - `GET /api/events`: Lấy danh sách sự kiện
+    - `POST /api/events`: Tạo sự kiện mới
+    - `GET /api/events/<id>`: Lấy chi tiết sự kiện
+    - `PUT /api/events/<id>`: Cập nhật sự kiện
+    - `DELETE /api/events/<id>`: Xóa sự kiện
+- **Categories API**
+    - `GET /api/categories`: Lấy danh sách categories
+    - `POST /api/categories`: Tạo category mới
 
-POST /api/events
-- Tạo sự kiện mới
-- Body: title, description, start_time, end_time, category_id
-
-GET /api/events/<id>
-- Lấy chi tiết sự kiện
-- Response: Event object
-
-PUT /api/events/<id>
-- Cập nhật sự kiện
-- Body: title, description, start_time, end_date
-
-DELETE /api/events/<id>
-- Xóa sự kiện
-Categories API
-Code
-GET /api/categories
-- Lấy danh sách categories
-
-POST /api/categories
-- Tạo category mới
-- Body: name, color, description
 5. Tính Năng Chi Tiết
 5.1 Calendar View
-Month View: Hiển thị lịch theo tháng
-Week View: Hiển thị lịch theo tuần
-Day View: Hiển thị lịch theo ngày
-Year View: Hiển thị tổng quan theo năm
+- Month View: Hiển thị lịch theo tháng
+- Week View: Hiển thị lịch theo tuần
+- Day View: Hiển thị lịch theo ngày
+- Year View: Hiển thị tổng quan theo năm
+
 5.2 Event Management
-Tạo/Sửa/Xóa sự kiện
-Phân loại sự kiện theo category
-Lặp lại sự kiện (daily, weekly, monthly)
-Nhắc nhở sự kiện
+- Tạo/Sửa/Xóa sự kiện
+- Phân loại sự kiện theo category
+- Lặp lại sự kiện (daily, weekly, monthly)
+- Nhắc nhở sự kiện
+
 5.3 Lunar Calendar
-Hiển thị ngày âm lịch
-Các ngày lễ, tết theo âm lịch
-Các ngày đặc biệt trong năm
+- Hiển thị ngày âm lịch
+- Các ngày lễ, tết theo âm lịch
+- Các ngày đặc biệt trong năm
+
 6. Database Schema
-SQL
+```sql
 CREATE TABLE events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title VARCHAR(100) NOT NULL,
@@ -143,9 +133,11 @@ CREATE TABLE categories (
     color VARCHAR(7) DEFAULT '#3498db',
     description VARCHAR(200)
 );
+```
+
 7. Configuration
 7.1 Environment Variables
-Code
+```plaintext
 FLASK_APP=run.py
 FLASK_ENV=development
 FLASK_DEBUG=1
@@ -154,44 +146,55 @@ FLASK_PORT=8088
 DATABASE_URL=sqlite:///lichviet.db
 SECRET_KEY=your-secret-key
 TIMEZONE=Asia/Ho_Chi_Minh
+```
+
 7.2 Development Configuration
-Python
+```python
 class DevelopmentConfig:
     DEBUG = True
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+```
+
 8. Testing
 8.1 Unit Tests
-bash
+```bash
 # Chạy tests
 python -m pytest tests/
 
 # Chạy với coverage
 pytest --cov=app tests/
+```
+
 8.2 Test Cases
-Test các models
-Test các routes
-Test API endpoints
-Test lunar calendar calculations
+- Test các models
+- Test các routes
+- Test API endpoints
+- Test lunar calendar calculations
+
 9. Deployment
 9.1 Production Setup
-bash
+```bash
 # Install production dependencies
 pip install gunicorn
 
 # Run with gunicorn
 gunicorn -w 4 -b 0.0.0.0:8088 run:app
+```
+
 9.2 Docker Deployment
-Dockerfile
+```dockerfile
 FROM python:3.10-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8088", "run:app"]
+```
+
 10. Bảo Trì và Cập Nhật
 10.1 Database Migrations
-bash
+```bash
 # Tạo migration mới
 flask db migrate -m "Description of changes"
 
@@ -200,20 +203,26 @@ flask db upgrade
 
 # Rollback
 flask db downgrade
+```
+
 10.2 Backup
-bash
+```bash
 # Backup database
 sqlite3 lichviet.db .dump > backup.sql
 
 # Restore database
 sqlite3 lichviet.db < backup.sql
+```
+
 11. Contributing
 Hướng dẫn đóng góp cho dự án:
 
-Fork repository
-Tạo branch mới
-Commit changes
-Push to branch
-Tạo Pull Request
+- Fork repository
+- Tạo branch mới
+- Commit changes
+- Push to branch
+- Tạo Pull Request
+
 12. License
 MIT License - Copyright (c) 2025 ndlong78
+```
