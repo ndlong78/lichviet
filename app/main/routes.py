@@ -8,7 +8,7 @@ from app.utils.date_utils import get_vietnamese_month_name, get_lunar_date
 # Define the is_today function
 def is_today(day, month, year):
     today = datetime.today()
-    return today.year == year and today.month == month and today.day == day
+    return today.year == year and today.month == month và today.day == day
 
 @bp.route('/')
 def index():
@@ -32,7 +32,7 @@ def month_view(year=None, month=None):
         year = today.year
         month = today.month
 
-    # Calculate the previous and next months
+    # Calculate the previous và next months
     if month == 1:
         prev_month = (year - 1, 12)
     else:
