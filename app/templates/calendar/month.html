@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% from "macros/calendar_macros.html" import render_date %}
 
-{% block title %}Calendar Month {{ month }}/{{ year }}{% endblock %}
+{% block title %}Lịch tháng {{ month }}/{{ year }}{% endblock %}
 
 {% block content %}
 <div class="calendar-container">
     <div class="calendar-header">
-        <h2>Month {{ month_name }} {{ year }}</h2>
+        <h2>{{ month_name }} {{ year }}</h2>
         <div class="calendar-navigation">
             <a href="{{ url_for('main.month_view', year=prev_month[0], month=prev_month[1]) }}" 
                class="nav-btn"><i class="fas fa-chevron-left"></i></a>
             <a href="{{ url_for('main.month_view') }}" 
-               class="nav-btn today-btn">This Month</a>
+               class="nav-btn today-btn">Tháng này</a>
             <a href="{{ url_for('main.month_view', year=next_month[0], month=next_month[1]) }}" 
                class="nav-btn"><i class="fas fa-chevron-right"></i></a>
         </div>
@@ -19,26 +19,29 @@
 
     <div class="calendar-grid">
         <div class="weekday-header">
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
+            <div>CN</div>
+            <div>T2</div>
+            <div>T3</div>
+            <div>T4</div>
+            <div>T5</div>
+            <div>T6</div>
+            <div>T7</div>
         </div>
 
         {% for week in calendar_data %}
         <div class="week-row">
             {% for day in week %}
             {% if day != 0 %}
+                {% set lunar_date = get_lunar_date(day) %}
+                {% set festivals = get_lunar_festivals(*solar_to_lunar(day)[:2]) %}
                 {{ render_date(
                     date=day,
+                    lunar_date=lunar_date,
+                    festivals=festivals,
                     events=events|filter_events_by_date(day.day, day.month, day.year),
                     is_today=is_today(day.day, day.month, day.year),
                     is_other_month=false
                 ) }}
-                <small class="lunar-date">{{ get_lunar_date(day) }}</small> <!-- Display lunar date -->
             {% else %}
                 <div class="date-cell empty"></div>
             {% endif %}

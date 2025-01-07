@@ -1,9 +1,12 @@
-{% macro render_date(date, events=[], is_today=False, is_other_month=False) %}
+{% macro render_date(date, lunar_date, festivals, events=[], is_today=False, is_other_month=False) %}
 <div class="date-cell {% if is_today %}today{% endif %} {% if is_other_month %}other-month{% endif %}"
      data-date="{{ date.strftime('%Y-%m-%d') }}">
     <div class="date-number">
         {{ date.day }}
-        <small class="lunar-date">{{ get_lunar_date(date) }}</small>
+        <small class="lunar-date">{{ lunar_date }}</small>
+        {% if festivals %}
+        <small class="festival">{{ festivals }}</small>
+        {% endif %}
     </div>
     <div class="events-container">
         {% for event in events %}

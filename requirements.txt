@@ -5,3 +5,4 @@ Flask-SQLAlchemy==2.5.1
 Flask-Migrate==3.1.0
 python-dotenv==0.19.0
 pytz==2023.3
+ephem==4.1.4
