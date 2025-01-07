@@ -1,44 +1,47 @@
-import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_caching import Cache
 from flask_migrate import Migrate
-from datetime import datetime
+from config import Config
+import logging
+from logging.handlers import RotatingFileHandler
+import os
 
 db = SQLAlchemy()
+cache = Cache()
 migrate = Migrate()
 
-def create_app(config_class):
+def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
-    
+
+    # Khởi tạo các extensions
     db.init_app(app)
+    cache.init_app(app)
     migrate.init_app(app, db)
-    
+
+    # Đăng ký các blueprints
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
-    
-    # Ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-    
-    # Register the datetime filter
-    def datetime_filter(value, format='%Y-%m-%d %H:%M:%S', *args, **kwargs):
-        if isinstance(value, datetime):
-            return value.strftime(format)
-        return value
-    
-    app.jinja_env.filters['datetime'] = datetime_filter
 
-    # Register the filter_events_by_date filter
-    def filter_events_by_date(events, day, month, year):
-        start_date = datetime(year, month, day)
-        end_date = datetime(year, month, day + 1)
-        return [event for event in events if start_date <= event.start_time < end_date]
-    
-    app.jinja_env.filters['filter_events_by_date'] = filter_events_by_date
-    
+    from app.api import bp as api_bp
+    app.register_blueprint(api_bp, url_prefix='/api')
+
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
+
+    # Cấu hình logging
+    if not app.debug and not app.testing:
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        file_handler = RotatingFileHandler('logs/lichviet.log',
+                                         maxBytes=10240, backupCount=10)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+        ))
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('LichViet startup')
+
     return app
-
-from app import models
