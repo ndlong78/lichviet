@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from datetime import datetime, timedelta
 from calendar import monthrange
 from app import app, db
-from app.models import User, Event, Category, RepeatType
+from app.models import User, Event, Category, RepeatType, EventReminder, CalendarSharing
 from app.forms import LoginForm, RegistrationForm, EventForm, CategoryForm
 from app.utils import convert_to_lunar, get_lunar_date
 
@@ -123,7 +123,12 @@ def new_event():
             event.repeat_end_date = form.repeat_end_date.data
             
         if form.reminder_minutes.data:
-            event.reminder_minutes = form.reminder_minutes.data
+            reminder = EventReminder(
+                event_id=event.id,
+                notification_type='email',
+                minutes_before=form.reminder_minutes.data
+            )
+            db.session.add(reminder)
             
         db.session.add(event)
         db.session.commit()
@@ -203,6 +208,21 @@ def get_events():
 def get_categories():
     categories = Category.query.filter_by(user_id=current_user.id).all()
     return jsonify([category.to_dict() for category in categories])
+
+@app.route('/api/events/<int:id>', methods=['PUT'])
+@login_required
+def update_event_api(id):
+    event = Event.query.get_or_404(id)
+    if event.user_id != current_user.id:
+        abort(403)
+    
+    data = request.get_json()
+    for key, value in data.items():
+        if hasattr(event, key):
+            setattr(event, key, value)
+    
+    db.session.commit()
+    return jsonify(event.to_dict())
 
 # Error handlers
 @app.errorhandler(404)
