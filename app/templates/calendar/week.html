@@ -1,44 +1,106 @@
 {% extends "base.html" %}
-{% import 'macros.html' as macros %}
+{% block title %}Lịch Tuần - Tuần {{ week_number }}{% endblock %}
 
 {% block content %}
-<div class="calendar-container">
-    <!-- Week Header -->
-    <div class="calendar-header">
-        <div class="calendar-nav">
-            <a href="{{ url_for('week_view', date=(week_start - timedelta(days=7)).strftime('%Y-%m-%d')) }}" 
-               class="btn btn-outline-primary">
-                <i class="fas fa-chevron-left"></i>
-            </a>
-            <h2>Tuần {{ week_start.strftime('%d/%m') }} - {{ (week_start + timedelta(days=6)).strftime('%d/%m/%Y') }}</h2>
-            <a href="{{ url_for('week_view', date=(week_start + timedelta(days=7)).strftime('%Y-%m-%d')) }}" 
-               class="btn btn-outline-primary">
-                <i class="fas fa-chevron-right"></i>
-            </a>
+<div class="week-view container-fluid">
+    <!-- Header -->
+    <div class="week-header d-flex justify-content-between align-items-center mb-4">
+        <div class="week-info">
+            <h2 class="mb-0">Tuần {{ week_number }} - Tháng {{ current_date.month }}/{{ current_date.year }}</h2>
+            <div class="text-muted">
+                {{ week_start.strftime('%d/%m') }} - {{ week_end.strftime('%d/%m/%Y') }}
+            </div>
         </div>
-        <div class="view-options">
-            <a href="{{ url_for('month_view') }}" class="btn btn-outline-primary">Tháng</a>
-            <a href="{{ url_for('week_view') }}" class="btn btn-primary active">Tuần</a>
-            <a href="{{ url_for('year_view') }}" class="btn btn-outline-primary">Năm</a>
+
+        <div class="view-controls d-flex gap-2">
+            <!-- View Switcher -->
+            <div class="btn-group me-2">
+                <a href="{{ url_for('main.month_view', date=current_date.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-secondary">
+                    <i class="fas fa-calendar-alt"></i> Tháng
+                </a>
+                <a href="{{ url_for('main.week_view', date=current_date.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-primary active">
+                    <i class="fas fa-calendar-week"></i> Tuần
+                </a>
+                <a href="{{ url_for('main.day_view', date=current_date.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-secondary">
+                    <i class="fas fa-calendar-day"></i> Ngày
+                </a>
+            </div>
+
+            <!-- Navigation -->
+            <div class="btn-group">
+                <a href="{{ url_for('main.week_view', date=prev_week.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-primary">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <a href="{{ url_for('main.week_view') }}" 
+                   class="btn btn-outline-primary">Tuần này</a>
+                <a href="{{ url_for('main.week_view', date=next_week.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-primary">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            <!-- Add Event -->
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newEventModal">
+                <i class="fas fa-plus"></i> Thêm sự kiện
+            </button>
         </div>
-        <button class="btn btn-success" onclick="openEventModal()">
-            <i class="fas fa-plus"></i> Thêm sự kiện
-        </button>
     </div>
 
-    <!-- Week View Grid -->
+    <!-- Week Grid -->
     <div class="week-grid">
         <!-- Time Column -->
         <div class="time-column">
             {% for hour in range(0, 24) %}
-            <div class="time-slot">{{ '%02d:00'|format(hour) }}</div>
+            <div class="time-slot">
+                <div class="time-label">{{ '%02d:00'|format(hour) }}</div>
+            </div>
             {% endfor %}
         </div>
 
         <!-- Day Columns -->
         {% for day in week_days %}
-        <div class="day-column {% if day.is_today %}today{% endif %}">
+        <div class="day-column {% if day.date() == today %}today{% endif %}">
             <div class="day-header">
-                <div class="weekday">{{ day.weekday_name }}</div>
-                <div class="date">
-                    <span class="solar-date">{{ day.date.strftime('%d/%m') }}</span
+                <div class="day-name">{{ day.strftime('%A') }}</div>
+                <div class="day-number">{{ day.day }}</div>
+                <div class="lunar-date">{{ get_lunar_date(day) }}</div>
+            </div>
+            
+            {% for hour in range(0, 24) %}
+            <div class="time-slot" 
+                 data-date="{{ day.strftime('%Y-%m-%d') }}" 
+                 data-hour="{{ hour }}"
+                 ondrop="dropEvent(event)"
+                 ondragover="allowDrop(event)">
+                {% for event in get_events_for_hour(day, hour) %}
+                <div class="event-card" 
+                     draggable="true"
+                     ondragstart="dragStart(event)"
+                     data-event-id="{{ event.id }}"
+                     style="background-color: {{ event.category.color }}20; 
+                            border-left: 4px solid {{ event.category.color }};"
+                     onclick="showEventDetails({{ event.id }})">
+                    <div class="event-time">
+                        {{ event.start_time.strftime('%H:%M') }}
+                    </div>
+                    <div class="event-title">{{ event.title }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modals -->
+{% include 'modals/event_detail.html' %}
+{% include 'modals/new_event.html' %}
+
+{% endblock %}
+
+{% block extra_css %}

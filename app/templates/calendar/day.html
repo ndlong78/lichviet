@@ -1,32 +1,189 @@
 {% extends "base.html" %}
-{% from "macros/calendar_macros.html" import render_time_slot %}
-
 {% block title %}Lịch Ngày - {{ current_date.strftime('%d/%m/%Y') }}{% endblock %}
 
 {% block content %}
-<div class="day-view">
-    <div class="day-header">
+<div class="day-view container-fluid">
+    <!-- Navigation Bar -->
+    <div class="day-header d-flex justify-content-between align-items-center mb-4">
         <div class="date-info">
-            <h2>{{ current_date.strftime('%A, %d/%m/%Y') }}</h2>
-            <div class="lunar-date">
+            <h2 class="mb-0">{{ current_date.strftime('%A, %d/%m/%Y') }}</h2>
+            <div class="lunar-date text-muted">
                 {{ get_lunar_date(current_date) }}
             </div>
         </div>
 
-        <div class="day-navigation">
-            <a href="{{ url_for('main.day_view', date=prev_day.strftime('%Y-%m-%d')) }}" 
-               class="nav-btn"><i class="fas fa-chevron-left"></i></a>
-            <a href="{{ url_for('main.day_view') }}" 
-               class="nav-btn today-btn">Hôm nay</a>
-            <a href="{{ url_for('main.day_view', date=next_day.strftime('%Y-%m-%d')) }}" 
-               class="nav-btn"><i class="fas fa-chevron-right"></i></a>
+        <div class="view-controls d-flex gap-2">
+            <!-- View Switcher -->
+            <div class="btn-group me-2">
+                <a href="{{ url_for('main.month_view', date=current_date.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-secondary">
+                    <i class="fas fa-calendar-alt"></i> Tháng
+                </a>
+                <a href="{{ url_for('main.week_view', date=current_date.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-secondary">
+                    <i class="fas fa-calendar-week"></i> Tuần
+                </a>
+                <a href="{{ url_for('main.day_view', date=current_date.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-primary active">
+                    <i class="fas fa-calendar-day"></i> Ngày
+                </a>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="btn-group">
+                <a href="{{ url_for('main.day_view', date=prev_day.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-primary">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <a href="{{ url_for('main.day_view') }}" 
+                   class="btn btn-outline-primary">Hôm nay</a>
+                <a href="{{ url_for('main.day_view', date=next_day.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-primary">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            <!-- Add Event Button -->
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newEventModal">
+                <i class="fas fa-plus"></i> Thêm sự kiện
+            </button>
         </div>
     </div>
 
+    <!-- Day Grid -->
     <div class="day-grid">
-        {% for hour in range(0, 24) %}
-            {{ render_time_slot(hour, get_events_for_hour(current_date, hour)) }}
-        {% endfor %}
+        <div class="timeline">
+            {% for hour in range(0, 24) %}
+            <div class="hour-slot">
+                <div class="hour-label">{{ '%02d:00'|format(hour) }}</div>
+                <div class="hour-content" 
+                     data-hour="{{ hour }}"
+                     data-date="{{ current_date.strftime('%Y-%m-%d') }}">
+                    {% for event in get_events_for_hour(current_date, hour) %}
+                    <div class="event-card" 
+                         data-event-id="{{ event.id }}"
+                         style="background-color: {{ event.category.color }}20; 
+                                border-left: 4px solid {{ event.category.color }};"
+                         onclick="showEventDetails({{ event.id }})">
+                        <div class="event-time">
+                            {{ event.start_time.strftime('%H:%M') }} - 
+                            {{ event.end_time.strftime('%H:%M') }}
+                        </div>
+                        <div class="event-title">{{ event.title }}</div>
+                        {% if event.location %}
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> {{ event.location }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
+
+<!-- Event Detail Modal -->
+{% include 'modals/event_detail.html' %}
+
+<!-- New Event Modal -->
+{% include 'modals/new_event.html' %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.day-grid {
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.hour-slot {
+    display: flex;
+    min-height: 60px;
+    border-bottom: 1px solid #eee;
+}
+
+.hour-label {
+    width: 80px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-right: 1px solid #ddd;
+    text-align: right;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.hour-content {
+    flex-grow: 1;
+    padding: 5px;
+    position: relative;
+}
+
+.event-card {
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.event-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.event-time {
+    font-size: 0.8em;
+    color: #666;
+}
+
+.event-location {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 4px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showEventDetails(eventId) {
+    fetch(`/api/events/${eventId}`)
+        .then(response => response.json())
+        .then(event => {
+            const modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+            // Populate modal with event details
+            document.getElementById('eventTitle').textContent = event.title;
+            document.getElementById('eventDateTime').textContent = 
+                `${event.start_time} - ${event.end_time}`;
+            document.getElementById('eventDescription').textContent = event.description;
+            
+            // Setup edit and delete buttons
+            document.getElementById('editEventBtn').href = 
+                `/event/${event.id}/edit`;
+            document.getElementById('deleteEventBtn').onclick = () => 
+                deleteEvent(event.id);
+                
+            modal.show();
+        });
+}
+
+function deleteEvent(eventId) {
+    if (confirm('Bạn có chắc muốn xóa sự kiện này?')) {
+        fetch(`/event/${eventId}/delete`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+            }
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+</script>
 {% endblock %}
