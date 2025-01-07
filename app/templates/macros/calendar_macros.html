@@ -1,20 +1,24 @@
-{% macro render_date(date, lunar_date, festivals, events=[], is_today=False, is_other_month=False) %}
-<div class="date-cell {% if is_today %}today{% endif %} {% if is_other_month %}other-month{% endif %}"
-     data-date="{{ date.strftime('%Y-%m-%d') }}">
-    <div class="date-number">
-        {{ date.day }}
-        <small class="lunar-date">{{ lunar_date }}</small>
-        {% if festivals %}
-        <small class="festival">{{ festivals }}</small>
+{% macro render_calendar_day(day, month, year, events) %}
+{% set date = datetime(year, month, day) %}
+{% set lunar_date = get_lunar_date(date) %}
+{% set festival = get_lunar_festival(*converter.solar_to_lunar(day, month, year)[:2]) %}
+
+<div class="calendar-day {% if date.date() == today.date() %}today{% endif %}">
+    <div class="day-header">
+        <span class="solar-date">{{ day }}</span>
+        <span class="lunar-date">{{ lunar_date }}</span>
+        {% if festival %}
+        <span class="festival">{{ festival }}</span>
         {% endif %}
     </div>
+    
     <div class="events-container">
         {% for event in events %}
-        <div class="event-item" 
-             style="background-color: {{ event.category.color }}"
-             data-event-id="{{ event.id }}">
-            {{ event.title }}
-        </div>
+            {% if event.date.day == day %}
+            <div class="event" style="background-color: {{ event.category.color }}">
+                {{ event.title }}
+            </div>
+            {% endif %}
         {% endfor %}
     </div>
 </div>

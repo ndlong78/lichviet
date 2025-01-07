@@ -1,19 +1,16 @@
 {% extends "base.html" %}
-{% from "macros/calendar_macros.html" import render_date %}
-
-{% block title %}Lịch tháng {{ month }}/{{ year }}{% endblock %}
+{% from "macros/calendar_macros.html" import render_calendar_day %}
 
 {% block content %}
 <div class="calendar-container">
     <div class="calendar-header">
-        <h2>{{ month_name }} {{ year }}</h2>
-        <div class="calendar-navigation">
+        <h2>{{ month_name }} {{ year }} - Năm {{ get_can_chi(year) }}</h2>
+        <div class="calendar-nav">
             <a href="{{ url_for('main.month_view', year=prev_month[0], month=prev_month[1]) }}" 
-               class="nav-btn"><i class="fas fa-chevron-left"></i></a>
-            <a href="{{ url_for('main.month_view') }}" 
-               class="nav-btn today-btn">Tháng này</a>
+               class="nav-btn">&lt;</a>
+            <a href="{{ url_for('main.month_view') }}" class="today-btn">Hôm nay</a>
             <a href="{{ url_for('main.month_view', year=next_month[0], month=next_month[1]) }}" 
-               class="nav-btn"><i class="fas fa-chevron-right"></i></a>
+               class="nav-btn">&gt;</a>
         </div>
     </div>
 
@@ -31,20 +28,11 @@
         {% for week in calendar_data %}
         <div class="week-row">
             {% for day in week %}
-            {% if day != 0 %}
-                {% set lunar_date = get_lunar_date(day) %}
-                {% set festivals = get_lunar_festivals(*solar_to_lunar(day)[:2]) %}
-                {{ render_date(
-                    date=day,
-                    lunar_date=lunar_date,
-                    festivals=festivals,
-                    events=events|filter_events_by_date(day.day, day.month, day.year),
-                    is_today=is_today(day.day, day.month, day.year),
-                    is_other_month=false
-                ) }}
-            {% else %}
-                <div class="date-cell empty"></div>
-            {% endif %}
+                {% if day != 0 %}
+                    {{ render_calendar_day(day, month, year, events) }}
+                {% else %}
+                    <div class="calendar-day empty"></div>
+                {% endif %}
             {% endfor %}
         </div>
         {% endfor %}
