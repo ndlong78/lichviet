@@ -12,8 +12,8 @@ def get_lunar_date(date=None):
     if date is None:
         date = datetime.now()  # Use the current date if no date is provided
 
-    # Assume you have a logic to calculate the lunar date from the solar date
-    # This is just an example, you need to replace it with your actual logic.
+    # Assume you have logic to calculate the lunar date from the solar date.
+    # This is just an example; you need to replace it with your actual logic.
     lunar_date = date  # Replace with actual logic
     lunar_day = lunar_date.day
     lunar_month = lunar_date.month
