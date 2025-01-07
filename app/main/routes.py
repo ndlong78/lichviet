@@ -1,11 +1,11 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify, abort
 from flask_login import login_user, logout_user, login_required, current_user
-from datetime import datetime, timedelta
-from calendar import monthrange
-from app import app, db
+from app import db
 from app.models import User, Event, Category, RepeatType, EventReminder, CalendarSharing
 from app.forms import LoginForm, RegistrationForm, EventForm, CategoryForm
 from app.utils import convert_to_lunar, get_lunar_date
+
+# Các route handlers của bạn
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
