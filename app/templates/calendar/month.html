@@ -1,36 +1,208 @@
 {% extends "base.html" %}
-
-{% block title %}Lịch tháng{% endblock %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
 <div class="calendar-container">
+    <!-- Calendar Header -->
     <div class="calendar-header">
-        <div class="navigation-buttons">
-            <a href="{{ url_for('month_view', year=prev_year, month=prev_month) }}" class="btn">‹</a>
-            <h2>Tháng {{ month }}/{{ year }}</h2>
-            <a href="{{ url_for('month_view', year=next_year, month=next_month) }}" class="btn">›</a>
+        <div class="calendar-nav">
+            <a href="{{ url_for('month_view', year=prev_month.year, month=prev_month.month) }}" 
+               class="btn btn-outline-primary">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <h2>{{ month_name }} {{ year }}</h2>
+            <a href="{{ url_for('month_view', year=next_month.year, month=next_month.month) }}" 
+               class="btn btn-outline-primary">
+                <i class="fas fa-chevron-right"></i>
+            </a>
         </div>
-        <div class="view-buttons">
-            <a href="{{ url_for('month_view') }}" class="btn active">Tháng</a>
-            <a href="{{ url_for('week_view') }}" class="btn">Tuần</a>
-            <a href="{{ url_for('year_view') }}" class="btn">Năm</a>
+        <div class="view-options">
+            <a href="{{ url_for('month_view') }}" class="btn btn-primary active">Tháng</a>
+            <a href="{{ url_for('week_view') }}" class="btn btn-outline-primary">Tuần</a>
+            <a href="{{ url_for('year_view') }}" class="btn btn-outline-primary">Năm</a>
         </div>
+        <button class="btn btn-success" onclick="openEventModal()">
+            <i class="fas fa-plus"></i> Thêm sự kiện
+        </button>
     </div>
 
-    <div id="calendar"></div>
+    <!-- Calendar Grid -->
+    <div class="calendar-grid">
+        <!-- Weekday Headers -->
+        <div class="weekday-header">
+            {% for day in ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'] %}
+            <div class="weekday">{{ day }}</div>
+            {% endfor %}
+        </div>
 
-    <button class="fab" onclick="location.href='{{ url_for('new_event') }}'">+</button>
+        <!-- Calendar Days -->
+        <div class="days-grid">
+            {% for week in calendar_weeks %}
+            <div class="week">
+                {% for day in week %}
+                <div class="day {% if day.today %}today{% endif %} 
+                            {% if day.month != month %}other-month{% endif %}">
+                    <div class="day-header">
+                        <span class="solar-date">{{ day.solar_date }}</span>
+                        <span class="lunar-date">{{ day.lunar_date }}</span>
+                    </div>
+                    <div class="events-container">
+                        {% for event in day.events %}
+                        <div class="event-item" 
+                             style="background-color: {{ event.category.color }}"
+                             onclick="showEventDetails({{ event.id }})">
+                            {% if event.is_all_day %}
+                            <span class="all-day-marker">Cả ngày</span>
+                            {% else %}
+                            <span class="event-time">{{ event.start_time.strftime('%H:%M') }}</span>
+                            {% endif %}
+                            <span class="event-title">{{ event.title }}</span>
+                        </div>
+                        {% endfor %}
+                        {% if day.more_events %}
+                        <div class="more-events" onclick="showMoreEvents({{ day.date.strftime('%Y-%m-%d') }})">
+                            +{{ day.more_events }} sự kiện khác
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Event Modal -->
+{% include 'event/modal.html' %}
+
+<!-- More Events Modal -->
+<div class="modal fade" id="moreEventsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sự kiện ngày <span id="selectedDate"></span></h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="moreEventsContainer">
+                <!-- Events will be loaded here -->
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+{{ super() }}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        initialDate: '{{ year }}-{{ month }}-01',
-        headerToolbar: false,
-        events: '{{ url_for('get_events') }}',
-        eventClick: function(info) {
-            location.href = '{{ url_for('edit_event', id='') }}'
+    // Calendar initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCalendar();
+    });
+
+    function initializeCalendar() {
+        // Add event listeners and initialize any needed functionality
+        setupEventHandlers();
+        setupDragAndDrop();
+    }
+
+    function setupEventHandlers() {
+        // Handle event clicks
+        document.querySelectorAll('.event-item').forEach(event => {
+            event.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const eventId = this.getAttribute('data-event-id');
+                showEventDetails(eventId);
+            });
+        });
+
+        // Handle day clicks for new event
+        document.querySelectorAll('.day').forEach(day => {
+            day.addEventListener('click', function() {
+                const date = this.getAttribute('data-date');
+                openEventModal(date);
+            });
+        });
+    }
+
+    function setupDragAndDrop() {
+        // Initialize drag and drop for events
+        const draggables = document.querySelectorAll('.event-item');
+        const dropzones = document.querySelectorAll('.day');
+
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', handleDragStart);
+            draggable.addEventListener('dragend', handleDragEnd);
+        });
+
+        dropzones.forEach(dropzone => {
+            dropzone.addEventListener('dragover', handleDragOver);
+            dropzone.addEventListener('drop', handleDrop);
+        });
+    }
+
+    // Event Modal Functions
+    function openEventModal(date = null) {
+        const modal = $('#eventModal');
+        if (date) {
+            $('#event_start_time').val(date);
+            $('#event_end_time').val(date);
+        }
+        modal.modal('show');
+    }
+
+    function showEventDetails(eventId) {
+        fetch(`/api/events/${eventId}`)
+            .then(response => response.json())
+            .then(event => {
+                // Populate and show event details modal
+                populateEventModal(event);
+                $('#eventModal').modal('show');
+            });
+    }
+
+    function showMoreEvents(date) {
+        fetch(`/api/events?date=${date}`)
+            .then(response => response.json())
+            .then(events => {
+                const container = document.getElementById('moreEventsContainer');
+                container.innerHTML = ''; // Clear existing content
+                
+                events.forEach(event => {
+                    container.innerHTML += createEventListItem(event);
+                });
+                
+                document.getElementById('selectedDate').textContent = formatDate(date);
+                $('#moreEventsModal').modal('show');
+            });
+    }
+
+    // Helper Functions
+    function createEventListItem(event) {
+        return `
+            <div class="event-list-item" onclick="showEventDetails(${event.id})">
+                <div class="event-time">
+                    ${event.is_all_day ? 'Cả ngày' : formatTime(event.start_time)}
+                </div>
+                <div class="event-details">
+                    <div class="event-title">${event.title}</div>
+                    ${event.location ? `<div class="event-location">${event.location}</div>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    function formatDate(dateStr) {
+        return new Date(dateStr).toLocaleDateString('vi-VN');
+    }
+
+    function formatTime(timeStr) {
+        return new Date(timeStr).toLocaleTimeString('vi-VN', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+</script>
+{% endblock %}

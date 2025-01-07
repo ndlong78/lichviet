@@ -1,0 +1,50 @@
+{% macro render_field(field) %}
+    <div class="form-group">
+        {{ field.label(class="form-label") }}
+        {% if field.type == "BooleanField" %}
+            <div class="custom-control custom-switch">
+                {{ field(class="custom-control-input") }}
+                {{ field.label(class="custom-control-label") }}
+            </div>
+        {% else %}
+            {{ field(class="form-control" + (" is-invalid" if field.errors else "")) }}
+        {% endif %}
+        {% for error in field.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro render_event_card(event) %}
+    <div class="card event-card mb-2" 
+         style="border-left: 5px solid {{ event.category.color if event.category else '#3498db' }}">
+        <div class="card-body">
+            <h5 class="card-title">{{ event.title }}</h5>
+            <p class="card-text">
+                {% if event.is_all_day %}
+                    <i class="far fa-clock"></i> Cả ngày
+                {% else %}
+                    <i class="far fa-clock"></i> 
+                    {{ event.start_time.strftime('%H:%M') }} - {{ event.end_time.strftime('%H:%M') }}
+                {% endif %}
+            </p>
+            {% if event.location %}
+                <p class="card-text"><i class="fas fa-map-marker-alt"></i> {{ event.location }}</p>
+            {% endif %}
+            <div class="event-actions">
+                <button class="btn btn-sm btn-info" 
+                        onclick="showEventDetails({{ event.id }})">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <a href="{{ url_for('edit_event', id=event.id) }}" 
+                   class="btn btn-sm btn-primary">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <button class="btn btn-sm btn-danger" 
+                        onclick="deleteEvent({{ event.id }})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

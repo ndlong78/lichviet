@@ -1,0 +1,33 @@
+<div class="modal fade" id="eventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết sự kiện</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="event-details">
+                    <h4 id="eventTitle"></h4>
+                    <div class="event-time mb-3">
+                        <i class="far fa-clock"></i>
+                        <span id="eventTime"></span>
+                    </div>
+                    <div class="event-location mb-3" id="eventLocationContainer">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="eventLocation"></span>
+                    </div>
+                    <div class="event-category mb-3">
+                        <i class="fas fa-tag"></i>
+                        <span id="eventCategory"></span>
+                    </div>
+                    <div class="event-description" id="eventDescription"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+                <a href="#" id="editEventBtn" class="btn btn-primary">Chỉnh sửa</a>
+                <button type="button" id="deleteEventBtn" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>

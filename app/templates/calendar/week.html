@@ -1,52 +1,44 @@
 {% extends "base.html" %}
-{% from "macros/calendar_macros.html" import render_time_slot %}
-
-{% block title %}Lịch Tuần - Tuần {{ week_number }}{% endblock %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
-<div class="week-view">
-    <div class="week-header">
-        <div class="week-info">
-            <h2>Tuần {{ week_number }} - Tháng {{ current_date.month }}/{{ current_date.year }}</h2>
+<div class="calendar-container">
+    <!-- Week Header -->
+    <div class="calendar-header">
+        <div class="calendar-nav">
+            <a href="{{ url_for('week_view', date=(week_start - timedelta(days=7)).strftime('%Y-%m-%d')) }}" 
+               class="btn btn-outline-primary">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <h2>Tuần {{ week_start.strftime('%d/%m') }} - {{ (week_start + timedelta(days=6)).strftime('%d/%m/%Y') }}</h2>
+            <a href="{{ url_for('week_view', date=(week_start + timedelta(days=7)).strftime('%Y-%m-%d')) }}" 
+               class="btn btn-outline-primary">
+                <i class="fas fa-chevron-right"></i>
+            </a>
         </div>
-
-        <div class="week-navigation">
-            <a href="{{ url_for('main.week_view', date=prev_week.strftime('%Y-%m-%d')) }}" 
-               class="nav-btn"><i class="fas fa-chevron-left"></i></a>
-            <a href="{{ url_for('main.week_view') }}" 
-               class="nav-btn today-btn">Tuần này</a>
-            <a href="{{ url_for('main.week_view', date=next_week.strftime('%Y-%m-%d')) }}" 
-               class="nav-btn"><i class="fas fa-chevron-right"></i></a>
+        <div class="view-options">
+            <a href="{{ url_for('month_view') }}" class="btn btn-outline-primary">Tháng</a>
+            <a href="{{ url_for('week_view') }}" class="btn btn-primary active">Tuần</a>
+            <a href="{{ url_for('year_view') }}" class="btn btn-outline-primary">Năm</a>
         </div>
+        <button class="btn btn-success" onclick="openEventModal()">
+            <i class="fas fa-plus"></i> Thêm sự kiện
+        </button>
     </div>
 
+    <!-- Week View Grid -->
     <div class="week-grid">
+        <!-- Time Column -->
         <div class="time-column">
             {% for hour in range(0, 24) %}
-            <div class="time-label">{{ '%02d:00'|format(hour) }}</div>
+            <div class="time-slot">{{ '%02d:00'|format(hour) }}</div>
             {% endfor %}
         </div>
 
+        <!-- Day Columns -->
         {% for day in week_days %}
-        <div class="day-column">
-            <div class="day-header {% if day.date() == today %}today{% endif %}">
-                <div class="day-name">{{ day.strftime('%A') }}</div>
-                <div class="day-number">{{ day.day }}</div>
-                <div class="lunar-date">{{ get_lunar_date(day) }}</div>
-            </div>
-            
-            {% for hour in range(0, 24) %}
-            <div class="time-slot" data-date="{{ day.strftime('%Y-%m-%d') }}" data-hour="{{ hour }}">
-                {% for event in get_events_for_hour(day, hour) %}
-                <div class="event" style="background-color: {{ event.category.color }}"
-                     data-event-id="{{ event.id }}">
-                    {{ event.title }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% endblock %}
+        <div class="day-column {% if day.is_today %}today{% endif %}">
+            <div class="day-header">
+                <div class="weekday">{{ day.weekday_name }}</div>
+                <div class="date">
+                    <span class="solar-date">{{ day.date.strftime('%d/%m') }}</span
