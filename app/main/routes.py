@@ -11,7 +11,7 @@ def is_today(day, month, year):
     return today.year == year and today.month == month and today.day == day
 
 # Context processor to inject functions into Jinja2 templates
-@bp.app_context_processor
+@bp.context_processor
 def inject_functions():
     return dict(get_lunar_date=get_lunar_date)
 
